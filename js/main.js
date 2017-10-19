@@ -22,24 +22,64 @@ var cards = [
 ];
 
 var cardsInPlay = [];
+var userScore = 0;
+
+var stopPlay = function() {
+	for (var i = 0; i < cards.length; i++) {
+		document.getElementById(i).removeEventListener('click',flipCard);
+	}	
+};
 
 var checkForMatch = function() {
 	if (cardsInPlay.length === 2) {
 		if (cardsInPlay[0] === cardsInPlay[1]) {
-			alert("You found a match!");
+			document.getElementById("output").innerHTML = 'You found a match!';
+			userScore +=1;
+			document.getElementById("score").innerHTML = 'Score: ' + userScore;
 		} else {
-			alert("Sorry, try again.");}
+			document.getElementById("output").innerHTML = 'Sorry, try again.';
 		}
-}
-
-var flipCard = function(cardId) {
-	console.log("User flipped " + cards[cardId].rank);
-	cardsInPlay.push(cards[cardId].rank);
-	console.log(cards[cardId].suit)
-	console.log(cards[cardId].cardImage)
-	checkForMatch();
+		stopPlay();
+	};
 };
 
-flipCard(3)
-flipCard(2)
+var flipCard = function() {
+	var cardId = this.getAttribute('id') 
+	cardsInPlay.push(cards[cardId].rank);
+	document.getElementById(cardId).setAttribute('src',cards[cardId].cardImage);
+	checkForMatch(cardId);
+};
 
+
+var cardsIndex = [0, 1, 2, 3];
+function shuffle(a) {
+    var j, x, i;
+    for (i = a.length - 1; i > 0; i--) {
+        j = Math.floor(Math.random() * (i + 1));
+        x = a[i];
+        a[i] = a[j];
+        a[j] = x;
+    };
+};
+
+var createBoard = function() {
+	shuffle(cardsIndex);
+	for (var i = 0; i < cards.length; i++) {
+		var cardElement = document.createElement('img');
+		cardElement.setAttribute('src','images/back.png');
+		cardElement.setAttribute('id',cardsIndex[i]);
+		cardElement.addEventListener('click',flipCard);
+		document.getElementById('game-board').appendChild(cardElement);
+	};
+};
+
+createBoard();
+
+var reset = function() {
+	for (var i = 0; i < cards.length; i++) {
+		document.getElementById(i).setAttribute('src','images/back.png')
+		document.getElementById(i).addEventListener('click',flipCard);
+	}
+	document.getElementById("output").innerHTML = ".";
+	return cardsInPlay = [];
+};
